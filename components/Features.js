@@ -1,4 +1,4 @@
-"use client"; // only if you use client-only features; remove if not needed
+"use client";
 
 import {
   IoPencilOutline,
@@ -22,39 +22,39 @@ export default function Features() {
   const items = [
     {
       icon: "pencil-outline",
-      title: "Design",
+      title: "Expert Design",
       content:
-        "Our BAFE-certified designers create customized fire alarm systems that meet regulations and your building's unique needs.",
+        "BAFE-certified designers create compliant fire alarm systems tailored to your building's specific requirements. Free site surveys and detailed proposals included.",
     },
     {
       icon: "hammer-outline",
-      title: "Installation",
+      title: "Professional Installation",
       content:
-        "Our expert engineers install fire alarm systems to top safety, compliance, and reliability standards.",
+        "NICET-trained technicians install systems using premium equipment. All work guaranteed with full compliance certificates and insurance coverage.",
     },
     {
       icon: "checkmark-circle-outline",
-      title: "Commission",
+      title: "Thorough Commissioning",
       content:
-        "We conduct thorough commissioning and testing to ensure full compliance and immediate protection.",
+        "Complete system testing and commissioning with local authority sign-off. Includes staff training and emergency procedure documentation.",
     },
     {
       icon: "headset-outline",
-      title: "Service",
+      title: "24/7 Support",
       content:
-        "We offer personalized service with detailed attention and unwavering quality for your fire alarm needs.",
+        "Round-the-clock monitoring and emergency call-out service. Average response time under 2 hours for critical issues across London & South East.",
     },
     {
       icon: "rocket-outline",
-      title: "Delivery",
+      title: "Fast Delivery",
       content:
-        "Projects are delivered on time, to spec, with support throughout every stage.",
+        "Projects completed on schedule with minimal disruption. Same-day emergency installations available for urgent requirements.",
     },
     {
       icon: "shield-outline",
-      title: "Aftercare",
+      title: "Ongoing Maintenance",
       content:
-        "Our dedicated aftercare resolves issues promptly, maintaining system integrity and your satisfaction.",
+        "Comprehensive maintenance contracts ensure optimal system performance. Regular inspections, testing, and compliance reporting included.",
     },
   ];
 

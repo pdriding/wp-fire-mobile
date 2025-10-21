@@ -14,6 +14,8 @@ const HeroSlider = () => {
               style={{
                 backgroundImage: `url("/images/fire-alarm-landing-1.jpg")`,
               }}
+              role="img"
+              aria-label="Professional fire alarm installation in modern office building"
             ></div>
           </div>
         </div>
@@ -23,12 +25,28 @@ const HeroSlider = () => {
           <div className="max-w-[70rem] mx-auto w-full px-4 sm:px-6 lg:px-8">
             <div className="relative flex flex-col items-start transform -translate-y-8 sm:-translate-y-12 ml-2 sm:ml-4 lg:ml-8">
               <h1 className="primary-title font-roboto text-lg sm:text-xl md:text-2xl lg:text-3xl xl:text-4xl font-semibold text-white mb-2 sm:mb-3 inline-block bg-[rgba(25,25,25,0.5)] p-3 sm:p-4 lg:p-6 rounded-sm sm:rounded-md">
-                Your Fire Alarm Installation Solutions
+                Professional Fire Alarm Installation & Maintenance Services
               </h1>
+              <p className="text-white text-sm sm:text-base md:text-lg lg:text-xl font-medium mb-4 sm:mb-6 bg-[rgba(25,25,25,0.5)] p-3 sm:p-4 lg:p-6 rounded-sm sm:rounded-md">
+                BAFE-certified technicians • 24/7 monitoring • Fast response times
+              </p>
 
-              <h2 className="get-quote font-roboto text-sm sm:text-base md:text-lg lg:text-xl font-semibold text-white bg-[#e53935] px-4 sm:px-6 lg:px-8 py-2 sm:py-3 lg:py-4 rounded-sm sm:rounded-md inline-block cursor-pointer no-underline transition-colors duration-300 mt-2 sm:mt-3 hover:bg-[#c62828]">
-                Get a Quote Now
-              </h2>
+              <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
+                <a 
+                  href="/#contact-section"
+                  className="get-quote font-roboto text-sm sm:text-base md:text-lg lg:text-xl font-semibold text-white bg-[#e53935] px-4 sm:px-6 lg:px-8 py-2 sm:py-3 lg:py-4 rounded-sm sm:rounded-md inline-block cursor-pointer no-underline transition-colors duration-300 hover:bg-[#c62828] focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-transparent"
+                  aria-label="Request a free fire safety quote"
+                >
+                  Request Free Quote
+                </a>
+                <a 
+                  href="tel:03338802993" 
+                  className="font-roboto text-sm sm:text-base md:text-lg lg:text-xl font-semibold text-white bg-transparent border-2 border-white px-4 sm:px-6 lg:px-8 py-2 sm:py-3 lg:py-4 rounded-sm sm:rounded-md inline-block cursor-pointer no-underline transition-colors duration-300 hover:bg-white hover:text-[#e53935] focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-transparent"
+                  aria-label="Call WP Fire now at 0333 880 2993"
+                >
+                  Call Now: 0333 880 2993
+                </a>
+              </div>
             </div>
           </div>
         </div>

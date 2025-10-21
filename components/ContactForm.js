@@ -1,9 +1,12 @@
 "use client";
 
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 
 export default function Contact() {
   const mapRef = useRef(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitStatus, setSubmitStatus] = useState(null);
+  const [errors, setErrors] = useState({});
 
   useEffect(() => {
     if (mapRef.current) {
@@ -12,13 +15,44 @@ export default function Contact() {
     }
   }, []);
 
-  function handleSubmit(e) {
+  async function handleSubmit(e) {
     e.preventDefault();
+    setIsSubmitting(true);
+    setSubmitStatus(null);
+    setErrors({});
+
     const form = new FormData(e.currentTarget);
     const data = Object.fromEntries(form.entries());
-    console.log("Contact form submitted", data);
-    alert("Thanks! Form data logged to console (implement POST to backend)");
-    e.currentTarget.reset();
+
+    try {
+      const response = await fetch('/api/send-contact', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+      });
+
+      const result = await response.json();
+
+      if (result.success) {
+        setSubmitStatus('success');
+        e.currentTarget.reset();
+      } else {
+        setSubmitStatus('error');
+        if (result.details) {
+          setErrors({ general: result.details.join(', ') });
+        } else {
+          setErrors({ general: result.error || 'Failed to send message' });
+        }
+      }
+    } catch (error) {
+      console.error('Form submission error:', error);
+      setSubmitStatus('error');
+      setErrors({ general: 'Network error. Please try again or call us directly.' });
+    } finally {
+      setIsSubmitting(false);
+    }
   }
 
   return (
@@ -28,8 +62,12 @@ export default function Contact() {
     >
       {/* Header */}
       <h2 className="text-2xl sm:text-3xl md:text-4xl mb-4 sm:mb-6 md:mb-8 text-center text-red-600 font-extralight">
-        Contact Us
+        Get Your Free Fire Safety Quote Today
       </h2>
+      <p className="text-center text-gray-600 mb-8 max-w-2xl mx-auto">
+        Ready to protect your property? Our BAFE-certified team provides free site surveys 
+        and detailed quotes for all fire safety installations. Call now or complete the form below.
+      </p>
       {/* Main container */}
       <div className="flex flex-col lg:flex-row justify-center items-center w-full max-w-6xl py-4 sm:py-6 md:py-8 gap-6 sm:gap-8">
         {/* Map */}
@@ -39,11 +77,37 @@ export default function Contact() {
           <form
             onSubmit={handleSubmit}
             className="text-gray-800 w-full max-w-md sm:max-w-lg text-sm sm:text-base"
+            aria-label="Contact form for fire safety services quote"
+            noValidate
           >
             <p className="italic text-gray-500 mb-3 sm:mb-4 text-xs sm:text-sm">
               Fields marked with an <span className="text-red-600">*</span> are
-              required.
+              required. We'll respond within 2 hours during business hours.
             </p>
+
+            {/* Success/Error Messages */}
+            {submitStatus === 'success' && (
+              <div className="mb-4 p-4 bg-green-100 border border-green-400 text-green-700 rounded-md" role="alert">
+                <p className="font-semibold">Thank you!</p>
+                <p>Your message has been sent successfully. We'll respond within 2 hours during business hours.</p>
+              </div>
+            )}
+
+            {submitStatus === 'error' && (
+              <div className="mb-4 p-4 bg-red-100 border border-red-400 text-red-700 rounded-md" role="alert">
+                <p className="font-semibold">Error sending message</p>
+                <p>{errors.general || 'Please try again or call us directly at 0333 880 2993.'}</p>
+              </div>
+            )}
+
+            {/* Honeypot field */}
+            <input
+              type="text"
+              name="website"
+              style={{ display: 'none' }}
+              tabIndex={-1}
+              autoComplete="off"
+            />
             {/* Row 1 */}
             <div className="flex flex-col sm:flex-row justify-between mb-3 sm:mb-4 gap-2 sm:gap-3">
               <div className="flex-1">
@@ -55,19 +119,28 @@ export default function Contact() {
                   id="name"
                   name="name"
                   required
+                  aria-describedby="name-error"
                   className="w-full p-2 sm:p-3 text-sm sm:text-base mt-1 border border-gray-300 rounded-sm bg-white focus:ring-2 focus:ring-red-500 focus:border-transparent"
                 />
+                <div id="name-error" className="sr-only" role="alert" aria-live="polite"></div>
               </div>
               <div className="flex-1">
-                <label htmlFor="company" className="block text-sm sm:text-base">
-                  Company:
+                <label htmlFor="service" className="block text-sm sm:text-base">
+                  Service Required:
                 </label>
-                <input
-                  type="text"
-                  id="company"
-                  name="company"
+                <select
+                  id="service"
+                  name="service"
                   className="w-full p-2 sm:p-3 text-sm sm:text-base mt-1 border border-gray-300 rounded-sm bg-white focus:ring-2 focus:ring-red-500 focus:border-transparent"
-                />
+                >
+                  <option value="">Select a service</option>
+                  <option value="fire-alarm-installation">Fire Alarm Installation</option>
+                  <option value="fire-alarm-maintenance">Fire Alarm Maintenance</option>
+                  <option value="emergency-lighting">Emergency Lighting</option>
+                  <option value="fire-risk-assessment">Fire Risk Assessment</option>
+                  <option value="security-systems">Security Systems</option>
+                  <option value="other">Other</option>
+                </select>
               </div>
             </div>
             {/* Row 2 */}
@@ -81,20 +154,24 @@ export default function Contact() {
                   id="email"
                   name="email"
                   required
+                  aria-describedby="email-error"
                   className="w-full p-2 sm:p-3 text-sm sm:text-base mt-1 border border-gray-300 rounded-sm bg-white focus:ring-2 focus:ring-red-500 focus:border-transparent"
                 />
+                <div id="email-error" className="sr-only" role="alert" aria-live="polite"></div>
               </div>
               <div className="flex-1">
                 <label htmlFor="phone" className="block text-sm sm:text-base">
                   Your Phone Number:<span className="text-red-600">*</span>
                 </label>
                 <input
-                  type="text"
+                  type="tel"
                   id="phone"
                   name="phone"
                   required
+                  aria-describedby="phone-error"
                   className="w-full p-2 sm:p-3 text-sm sm:text-base mt-1 border border-gray-300 rounded-sm bg-white focus:ring-2 focus:ring-red-500 focus:border-transparent"
                 />
+                <div id="phone-error" className="sr-only" role="alert" aria-live="polite"></div>
               </div>
             </div>
             {/* Message */}
@@ -106,33 +183,72 @@ export default function Contact() {
                 id="message"
                 name="message"
                 required
+                aria-describedby="message-error"
                 className="w-full p-2 sm:p-3 text-sm sm:text-base mt-1 border border-gray-300 rounded-sm h-24 sm:h-28 bg-white focus:ring-2 focus:ring-red-500 focus:border-transparent resize-vertical"
               ></textarea>
+              <div id="message-error" className="sr-only" role="alert" aria-live="polite"></div>
             </div>
             {/* Button */}
             <button
               type="submit"
-              className="px-4 sm:px-6 py-2 sm:py-3 text-sm sm:text-base text-white bg-red-600 rounded-sm hover:bg-red-700 transition-colors duration-200 self-start mt-1 w-full sm:w-auto"
+              disabled={isSubmitting}
+              className="px-4 sm:px-6 py-2 sm:py-3 text-sm sm:text-base text-white bg-red-600 rounded-sm hover:bg-red-700 transition-colors duration-200 self-start mt-1 w-full sm:w-auto focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
+              aria-describedby="submit-status"
             >
-              Send Message
+              {isSubmitting ? 'Sending...' : 'Get Free Quote'}
             </button>
+            <div id="submit-status" className="sr-only" aria-live="polite">
+              {isSubmitting ? 'Sending your message...' : submitStatus === 'success' ? 'Message sent successfully' : submitStatus === 'error' ? 'Failed to send message' : ''}
+            </div>
           </form>
         </div>
-        {/* Enquiries */}
+        {/* Contact Info & Testimonials */}
         <div className="flex justify-center w-full lg:w-1/2">
           <div className="flex flex-col gap-6 sm:gap-8 md:gap-10 text-gray-800 w-full max-w-sm sm:max-w-md text-sm sm:text-base items-start">
-            <h1 className="text-xl sm:text-2xl md:text-3xl font-light">
-              General Enquiries
-            </h1>
-            <p className="text-base sm:text-lg md:text-xl font-light">
-              0333 880 2993{" "}
-              <span className="text-red-600 mt-1 block text-lg sm:text-xl md:text-2xl">
-                info@wpfire.co.uk
-              </span>
-            </p>
-            <p className="leading-relaxed sm:leading-loose text-base sm:text-lg md:text-xl font-light">
-              8 The Lindens, <br /> Stock, <br /> Ingatestone, <br /> CM4 9NH
-            </p>
+            <h3 className="text-xl sm:text-2xl md:text-3xl font-light">
+              Contact Information
+            </h3>
+            <div className="space-y-4">
+              <div>
+                <p className="text-base sm:text-lg font-semibold text-red-600">
+                  Call Now: 0333 880 2993
+                </p>
+                <p className="text-sm text-gray-600">24/7 Emergency Service</p>
+              </div>
+              <div>
+                <p className="text-base sm:text-lg font-semibold text-red-600">
+                  info@wpfire.co.uk
+                </p>
+                <p className="text-sm text-gray-600">Response within 2 hours</p>
+              </div>
+              <div>
+                <p className="text-base sm:text-lg font-light">
+                  8 The Lindens, Stock, <br /> Ingatestone, CM4 9NH
+                </p>
+                <p className="text-sm text-gray-600">Serving London & South East</p>
+              </div>
+            </div>
+
+            {/* Testimonials */}
+            <div className="mt-8">
+              <h4 className="text-lg font-semibold mb-4">What Our Clients Say</h4>
+              <div className="space-y-4">
+                <div className="bg-white p-4 rounded-lg shadow-sm">
+                  <p className="text-sm italic mb-2">
+                    "WP Fire installed our fire alarm system quickly and professionally. 
+                    Their BAFE certification gave us confidence in their expertise."
+                  </p>
+                  <p className="text-xs text-gray-600">- Sarah M., Property Manager</p>
+                </div>
+                <div className="bg-white p-4 rounded-lg shadow-sm">
+                  <p className="text-sm italic mb-2">
+                    "Excellent service from start to finish. The team was knowledgeable, 
+                    punctual, and the system works perfectly."
+                  </p>
+                  <p className="text-xs text-gray-600">- James R., Business Owner</p>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>

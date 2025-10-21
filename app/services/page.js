@@ -1,7 +1,23 @@
 export const metadata = {
-  title: "WP Fire - Services",
-  description:
-    "Your trusted partner for professional fire alarm installation services. Ensuring safety and compliance for residential and commercial properties.",
+  title: "Fire Alarm Installation & Security Services",
+  description: "Professional fire alarm installation, emergency lighting, and security systems across London & South East England. BAFE-certified technicians, 24/7 support, free site surveys.",
+  keywords: ["fire alarm installation", "emergency lighting", "security systems", "CCTV", "intruder alarms", "access control", "London fire safety"],
+  openGraph: {
+    title: "Fire Alarm Installation & Security Services | WP Fire",
+    description: "Professional fire alarm installation, emergency lighting, and security systems across London & South East England. BAFE-certified technicians, 24/7 support.",
+    url: "https://wpfire.co.uk/services",
+    images: [
+      {
+        url: '/images/og-services.jpg',
+        width: 1200,
+        height: 630,
+        alt: 'WP Fire Services - Fire Alarm Installation and Security Systems',
+      },
+    ],
+  },
+  alternates: {
+    canonical: '/services',
+  },
 };
 
 export default function ServicesPage() {
@@ -9,13 +25,26 @@ export default function ServicesPage() {
     <div className="bg-[#f5f5f5] text-gray-800 w-screen px-10 pb-10">
       <main className="max-w-7xl mx-auto px-6  lg:py-20 pl-20">
         <header className="mb-10">
-          <h1 className="text-4xl lg:text-5xl font-light mb-4">Our Services</h1>
+          <h1 className="text-4xl lg:text-5xl font-light mb-4">Professional Fire Safety Services</h1>
           <p className="text-lg text-gray-600 max-w-3xl">
-            This is a list of the services that we offer. Please note that this
-            is a representative list and is not intended to be exhaustive. If
-            you would like a bespoke service that is not listed here, please get
-            in touch and a member of our team will be happy to help.
+            Comprehensive fire safety solutions for residential and commercial properties. 
+            Our BAFE-certified technicians deliver fully compliant installations with 
+            24/7 support across London and South East England. Get your free quote today.
           </p>
+          <div className="mt-6 flex flex-col sm:flex-row gap-4">
+            <a 
+              href="tel:03338802993" 
+              className="bg-red-600 text-white px-6 py-3 rounded-md font-semibold hover:bg-red-700 transition-colors text-center"
+            >
+              Call Now: 0333 880 2993
+            </a>
+            <a 
+              href="/#contact-section" 
+              className="bg-transparent border-2 border-red-600 text-red-600 px-6 py-3 rounded-md font-semibold hover:bg-red-600 hover:text-white transition-colors text-center"
+            >
+              Request Free Quote
+            </a>
+          </div>
         </header>
 
         {/* Life Safety Systems */}
@@ -24,12 +53,11 @@ export default function ServicesPage() {
           <div className="grid grid-cols-1 lg:grid-cols-3  items-start gap-10">
             <div className="lg:col-span-2">
               <p className="text-gray-600 leading-relaxed mb-6">
-                We specialise in the design, installation, and maintenance of
-                life safety systems that protect people and property. From fire
-                alarms to emergency lighting and integrated safety solutions, we
-                ensure every system is compliant, reliable, and built to respond
-                when it matters most. With constant innovation and a focus on
-                quality, we deliver peace of mind through safety you can trust.
+                <strong>Complete fire safety solutions</strong> designed to protect lives and property. 
+                Our BAFE-certified team delivers fully compliant fire alarm systems, emergency lighting, 
+                and integrated safety solutions. Every installation includes comprehensive testing, 
+                staff training, and ongoing maintenance support. <strong>Free site surveys</strong> 
+                and detailed proposals for all projects.
               </p>
 
               {/* adjusted spacing: tight vertical gap, large horizontal gap */}
@@ -71,14 +99,11 @@ export default function ServicesPage() {
           <div className="grid grid-cols-1 lg:grid-cols-3  items-start">
             <div className="lg:col-span-2">
               <p className="text-gray-600 leading-relaxed mb-6">
-                We provide consultation, design, and installation of a wide
-                range of electrical security systems, tailored to the needs of
-                both commercial and residential properties. In today’s world,
-                advanced security technology is essential, and its effectiveness
-                relies on expert installation and ongoing maintenance. As a
-                forward-thinking company, we stay ahead of the curve by keeping
-                up with the latest innovations in both home and commercial
-                security.
+                <strong>Advanced security systems</strong> for complete property protection. 
+                Our expert team designs and installs state-of-the-art intruder alarms, 
+                CCTV surveillance, access control, and intercom systems. All installations 
+                include remote monitoring options, mobile app control, and 24/7 technical 
+                support. <strong>Same-day emergency call-outs</strong> available across London & South East.
               </p>
 
               {/* same spacing adjustment for the second list */}
