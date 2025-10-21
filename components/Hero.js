@@ -49,21 +49,21 @@ const HeroSlider = () => {
     e.preventDefault();
     const sectionId = "contact-section";
     if (window.location.hash === `#${sectionId}`) {
-      // If already at section, recalculate and scroll again if needed (prevents no-op overshoot)
+      // If already at section, recalculate and scroll again if needed
       scroller.scrollTo(sectionId, {
         duration: 500,
         smooth: true,
-        offset: -45, // Fixed to match header's working offset
-        isDynamic: true, // Recalculate position for repeated clicks
+        offset: -headerHeight, // Use dynamic headerHeight instead of fixed -45
+        isDynamic: true,
       });
     } else {
       scroller.scrollTo(sectionId, {
         duration: 500,
         smooth: true,
-        offset: -45, // Fixed to match header
+        offset: -headerHeight, // Use dynamic headerHeight instead of fixed -45
         isDynamic: true,
       });
-      router.replace(`/${pathname}#${sectionId}`); // Update hash only if changing
+      router.replace(`/${pathname}#${sectionId}`);
     }
   };
 

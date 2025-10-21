@@ -1,38 +1,116 @@
-import Link from "next/link";
+"use client";
 
-export const metadata = {
-  title: "WP Fire - Services",
-  description:
-    "Professional fire alarm installation, emergency lighting, and security systems across London & South East England. BAFE-certified technicians, 24/7 support, free site surveys.",
-  keywords: [
-    "fire alarm installation",
-    "emergency lighting",
-    "security systems",
-    "CCTV",
-    "intruder alarms",
-    "access control",
-    "London fire safety",
-  ],
-  openGraph: {
-    title: "Fire Alarm Installation & Security Services | WP Fire",
-    description:
-      "Professional fire alarm installation, emergency lighting, and security systems across London & South East England. BAFE-certified technicians, 24/7 support.",
-    url: "https://wpfire.co.uk/services",
-    images: [
-      {
-        url: "/images/og-services.jpg",
-        width: 1200,
-        height: 630,
-        alt: "WP Fire Services - Fire Alarm Installation and Security Systems",
-      },
-    ],
-  },
-  alternates: {
-    canonical: "/services",
-  },
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import { scroller } from "react-scroll";
+
+// export const metadata = {
+//   title: "WP Fire - Services",
+//   description:
+//     "Professional fire alarm installation, emergency lighting, and security systems across London & South East England. BAFE-certified technicians, 24/7 support, free site surveys.",
+//   keywords: [
+//     "fire alarm installation",
+//     "emergency lighting",
+//     "security systems",
+//     "CCTV",
+//     "intruder alarms",
+//     "access control",
+//     "London fire safety",
+//   ],
+//   openGraph: {
+//     title: "Fire Alarm Installation & Security Services | WP Fire",
+//     description:
+//       "Professional fire alarm installation, emergency lighting, and security systems across London & South East England. BAFE-certified technicians, 24/7 support.",
+//     url: "https://wpfire.co.uk/services",
+//     images: [
+//       {
+//         url: "/images/og-services.jpg",
+//         width: 1200,
+//         height: 630,
+//         alt: "WP Fire Services - Fire Alarm Installation and Security Systems",
+//       },
+//     ],
+//   },
+//   alternates: {
+//     canonical: "/services",
+//   },
+// };
+
+// Simple throttler for resize events
+const throttle = (func, limit) => {
+  let lastFunc;
+  let lastRan;
+  return (...args) => {
+    if (!lastRan) {
+      func(...args);
+      lastRan = Date.now();
+    } else {
+      clearTimeout(lastFunc);
+      lastFunc = setTimeout(() => {
+        if (Date.now() - lastRan >= limit) {
+          func(...args);
+          lastRan = Date.now();
+        }
+      }, Math.max(0, limit - (Date.now() - lastRan)));
+    }
+  };
 };
 
 export default function ServicesPage() {
+  const router = useRouter();
+  const [headerHeight, setHeaderHeight] = useState(0);
+
+  // Dynamically measure header height on mount and resize
+  useEffect(() => {
+    const updateHeaderHeight = throttle(() => {
+      const header = document.querySelector("header");
+      if (header) {
+        setHeaderHeight(header.clientHeight);
+      }
+    }, 200);
+
+    requestAnimationFrame(updateHeaderHeight); // Measure after initial render
+    window.addEventListener("resize", updateHeaderHeight);
+
+    return () => window.removeEventListener("resize", updateHeaderHeight);
+  }, []);
+
+  // Handle scroll to contact section
+  const handleScrollToContact = (e) => {
+    e.preventDefault();
+    const sectionId = "contact-section";
+
+    // Navigate to root and store scroll target
+    sessionStorage.setItem("scrollTarget", sectionId);
+    router.push("/"); // Navigate to root without hash
+  };
+
+  // Handle scroll after navigation
+  useEffect(() => {
+    const scrollTarget = sessionStorage.getItem("scrollTarget");
+    if (scrollTarget) {
+      const scrollToSection = () => {
+        const element = document.getElementById(scrollTarget);
+        if (!element) {
+          requestAnimationFrame(scrollToSection);
+          return;
+        }
+        scroller.scrollTo(scrollTarget, {
+          duration: 500,
+          smooth: true,
+          offset: -headerHeight || -80, // Use headerHeight with fallback
+          isDynamic: true,
+        });
+        setTimeout(() => {
+          window.history.replaceState(null, "", `#${scrollTarget}`);
+        }, 550);
+        sessionStorage.removeItem("scrollTarget");
+      };
+      setTimeout(scrollToSection, 300); // Wait for content stabilization
+    }
+  }, [headerHeight]);
+
   return (
     <div className="bg-[#f5f5f5] text-gray-800 w-screen px-10 pb-10">
       <main className="max-w-7xl mx-auto px-6 pt-16 lg:py-20 lg:pl-20 ">
@@ -53,10 +131,9 @@ export default function ServicesPage() {
             >
               Call Now: 0333 880 2993
             </a>
-
-            {/* internal page anchor -> Next Link */}
             <Link
               href="/#contact-section"
+              onClick={handleScrollToContact}
               className="bg-transparent border-2 border-red-600 text-red-600 px-6 py-3 rounded-md font-semibold hover:bg-red-600 hover:text-white transition-colors text-center"
             >
               Request Free Quote
@@ -67,7 +144,7 @@ export default function ServicesPage() {
         {/* Life Safety Systems */}
         <section className="mb-12 flex-col">
           <h2 className="text-2xl font-medium mb-4">Life Safety Systems</h2>
-          <div className="grid grid-cols-1 lg:grid-cols-3  items-start gap-10">
+          <div className="grid grid-cols-1 lg:grid-cols-3 items-start gap-10">
             <div className="lg:col-span-2">
               <p className="text-gray-600 leading-relaxed mb-6">
                 <strong>Complete fire safety solutions</strong> designed to
@@ -78,9 +155,7 @@ export default function ServicesPage() {
                 support. <strong>Free site surveys</strong>
                 and detailed proposals for all projects.
               </p>
-
-              {/* adjusted spacing: tight vertical gap, large horizontal gap */}
-              <div className=" grid grid-cols-2! gap-x-2! gap-y-4!">
+              <div className="grid grid-cols-2 gap-x-2 gap-y-4">
                 {[
                   "Fire Alarm Design",
                   "Fire Alarm Installation",
@@ -115,7 +190,7 @@ export default function ServicesPage() {
         {/* Security */}
         <section>
           <h2 className="text-2xl font-medium mb-4">Security</h2>
-          <div className="grid grid-cols-1 lg:grid-cols-3  items-start">
+          <div className="grid grid-cols-1 lg:grid-cols-3 items-start">
             <div className="lg:col-span-2">
               <p className="text-gray-600 leading-relaxed mb-6">
                 <strong>Advanced security systems</strong> for complete property
@@ -126,9 +201,7 @@ export default function ServicesPage() {
                 support. <strong>Same-day emergency call-outs</strong> available
                 across London & South East.
               </p>
-
-              {/* same spacing adjustment for the second list */}
-              <ul className=" grid grid-cols-2! gap-x-2! gap-y-4!">
+              <ul className="grid grid-cols-2 gap-x-2 gap-y-4">
                 {[
                   "Intruder Alarms",
                   "CCTV",
@@ -136,7 +209,7 @@ export default function ServicesPage() {
                   "Access Control",
                   "Automated Gates",
                 ].map((s) => (
-                  <li key={s} className="flex items-center ">
+                  <li key={s} className="flex items-center">
                     <svg
                       className="flex-shrink-0 h-5 w-5 align-middle text-sky-600"
                       xmlns="http://www.w3.org/2000/svg"
