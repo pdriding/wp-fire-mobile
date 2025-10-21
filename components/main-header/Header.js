@@ -238,6 +238,29 @@ export default function Header() {
     }
   }, [pathname]);
 
+  // Close mobile menu on click outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (
+        mobileOpen &&
+        headerRef.current &&
+        mobileContentRef.current &&
+        !headerRef.current.contains(event.target) &&
+        !mobileContentRef.current.contains(event.target)
+      ) {
+        setMobileOpen(false);
+      }
+    };
+
+    if (mobileOpen) {
+      document.addEventListener("click", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("click", handleClickOutside);
+    };
+  }, [mobileOpen]);
+
   const baseLinkClass =
     "inline-block no-underline font-normal text-base hover:text-[#cf711f] active:text-[#b24f00] focus:outline-none focus:ring-0 transition-colors duration-200";
 
