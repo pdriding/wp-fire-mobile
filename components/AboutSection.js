@@ -69,7 +69,7 @@ const AboutSection = () => {
 
             <div className="install-picture-container w-full lg:w-1/2 flex items-start justify-center lg:justify-start">
               <Image
-                src="/images/fire-alarm-install.jpg"
+                src="public/images/fire-alarm-install.jpg"
                 alt="Professional fire alarm technician installing fire detection system in commercial building"
                 width={400}
                 height={400}
