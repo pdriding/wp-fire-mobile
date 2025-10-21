@@ -6,11 +6,10 @@
   NODE_VERSION = "18"
   NPM_FLAGS = "--production=false"
 
-# Redirects for SPA routing
-[[redirects]]
-  from = "/*"
-  to = "/index.html"
-  status = 200
+[[plugins]]
+  package = "@netlify/plugin-nextjs"
+
+
 
 # Security headers
 [[headers]]
