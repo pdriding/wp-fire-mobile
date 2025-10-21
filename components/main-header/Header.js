@@ -7,6 +7,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { IoCallOutline } from "react-icons/io5";
 import { scroller } from "react-scroll";
 
+// Simple throttler
 const throttle = (func, limit) => {
   let lastFunc;
   let lastRan;
@@ -30,10 +31,11 @@ export default function Header() {
   const pathname = usePathname();
   const router = useRouter();
   const headerRef = useRef(null);
+  const mobileContentRef = useRef(null);
   const [headerHeight, setHeaderHeight] = useState(0);
   const [activeSection, setActiveSection] = useState("home");
 
-  // scroll spy hook
+  // scroll spy hook (kept from your original logic)
   const useScrollSpy = (ids, offset = 0) => {
     const [activeId, setActiveId] = useState("home");
 
@@ -93,10 +95,24 @@ export default function Header() {
 
   // mobile menu state
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [mobileMaxHeight, setMobileMaxHeight] = useState(0);
 
   useEffect(() => {
+    // close mobile nav when path changes
     setMobileOpen(false);
   }, [pathname]);
+
+  // compute dynamic max-height for smooth height animation
+  useEffect(() => {
+    const compute = () => {
+      if (mobileContentRef.current) {
+        setMobileMaxHeight(mobileContentRef.current.scrollHeight);
+      }
+    };
+    compute();
+    window.addEventListener("resize", compute);
+    return () => window.removeEventListener("resize", compute);
+  }, []);
 
   const handleHashClick = (e, hash) => {
     const sectionId = hash.slice(1);
@@ -170,6 +186,12 @@ export default function Header() {
     return `${baseLinkClass} ${
       activeSection === section ? "text-[#cf711f]" : "text-[#333]"
     }`;
+  };
+
+  // small helper to force a repaint (used after closing in some browsers)
+  const forceRepaint = () => {
+    void document.body.offsetHeight;
+    requestAnimationFrame(() => {});
   };
 
   return (
@@ -279,14 +301,25 @@ export default function Header() {
         </button>
       </div>
 
-      {/* Mobile nav */}
+      {/* Mobile nav — using max-height animation to avoid transform repaint bugs */}
       <nav
-        className={`md:hidden absolute left-0 right-0 top-full bg-white shadow-md z-40 transform-gpu transition-transform duration-200 origin-top ${
-          mobileOpen ? "scale-y-100" : "scale-y-0 pointer-events-none"
-        }`}
+        className={`md:hidden absolute left-0 right-0 top-full bg-white shadow-md z-40 transition-all duration-200 overflow-hidden`}
         aria-hidden={!mobileOpen}
+        // add a tiny GPU hint to reduce flicker on some browsers
+        style={{
+          maxHeight: mobileOpen ? `${mobileMaxHeight}px` : "0px",
+          paddingTop: mobileOpen ? "1rem" : "0",
+          paddingBottom: mobileOpen ? "1rem" : "0",
+          WebkitBackfaceVisibility: "hidden",
+          backfaceVisibility: "hidden",
+          transform: "translateZ(0)",
+          pointerEvents: mobileOpen ? "auto" : "none",
+        }}
       >
-        <div className="max-w-[70rem] mx-auto px-4 sm:px-6 lg:px-8 py-4">
+        <div
+          className="max-w-[70rem] mx-auto px-4 sm:px-6 lg:px-8"
+          ref={mobileContentRef}
+        >
           <ul className="flex flex-col gap-3">
             <li>
               <NextLink
@@ -300,6 +333,8 @@ export default function Header() {
                     setTimeout(() => setActiveSection("home"), 550);
                   }
                   setMobileOpen(false);
+                  // small repaint safeguard for flaky browsers
+                  forceRepaint();
                 }}
               >
                 Home
