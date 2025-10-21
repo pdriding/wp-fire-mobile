@@ -26,20 +26,20 @@ const AboutSection = () => {
           <div className="about-section-flex flex flex-col lg:flex-row justify-between gap-6 lg:gap-8 mb-4 sm:mb-5">
             <div className="about-section-texts w-full lg:w-1/2">
               <p className="about-section-text-1 leading-relaxed sm:leading-loose pl-0 sm:pl-4 lg:pl-5 mb-4 sm:mb-5 text-base sm:text-lg lg:text-xl font-medium">
-                <strong>Why businesses trust WP Fire:</strong> Our
-                BAFE-certified technicians deliver fully compliant fire safety
-                systems with 24/7 monitoring support. We&apos;ve completed over
-                200+ installations across London and the South East, with a 100%
-                compliance record and same-day emergency response.
+                <strong>So why do our clients choose WP Fire --</strong> and why
+                do they return to us for new projects? The answer is simple: we
+                put the customer first. Every system we design, install,
+                commission, or maintain is tailored to the specific needs of the
+                building and the people who rely on it.
               </p>
 
               <p className="about-section-text-2 font-light leading-relaxed sm:leading-loose pl-0 sm:pl-4 lg:pl-5 text-base sm:text-lg lg:text-xl">
-                Established in 2022, WP Fire has quickly become the preferred
-                choice for local councils, property developers, and main
-                contractors. Our comprehensive services include fire alarm
-                design, installation, maintenance, and emergency lighting
-                systems. We&apos;re fully insured, BAFE-registered, and
-                committed to protecting your people and property.
+                Established in 2022 with a clear mission: to deliver reliable,
+                compliant, and high-quality fire and security solutions that
+                protect people, property, and businesses. In a short time, we
+                have built strong relationships with local councils, developers,
+                and main contractors, who trust us to handle projects of all
+                sizes with professionalism and care.
               </p>
 
               <div className="pl-0 sm:pl-4 lg:pl-5 mt-6">

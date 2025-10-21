@@ -21,11 +21,12 @@ export default function Contact() {
     setSubmitStatus(null);
     setErrors({});
 
-    const form = new FormData(e.currentTarget);
+    const formElement = e.currentTarget; // Store reference before async operation
+    const form = new FormData(formElement);
     const data = Object.fromEntries(form.entries());
 
     try {
-      const response = await fetch("/api/send-contact", {
+      const response = await fetch("https://formspree.io/f/xovkzkpn", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -35,13 +36,19 @@ export default function Contact() {
 
       const result = await response.json();
 
-      if (result.success) {
+      if (response.ok && result.ok) {
+        // Formspree uses { ok: true } for success
         setSubmitStatus("success");
-        e.currentTarget.reset();
+        formElement.reset(); // Use stored reference
       } else {
         setSubmitStatus("error");
-        if (result.details) {
-          setErrors({ general: result.details.join(", ") });
+        if (result.errors) {
+          // Map Formspree errors (array of { field, message })
+          const errorMap = result.errors.reduce((acc, err) => {
+            acc[err.field] = err.message;
+            return acc;
+          }, {});
+          setErrors(errorMap);
         } else {
           setErrors({ general: result.error || "Failed to send message" });
         }
@@ -110,18 +117,25 @@ export default function Contact() {
                 <p className="font-semibold">Error sending message</p>
                 <p>
                   {errors.general ||
+                    Object.values(errors).join(", ") ||
                     "Please try again or call us directly at 0333 880 2993."}
                 </p>
               </div>
             )}
 
-            {/* Honeypot field */}
+            {/* Honeypot field - Changed to Formspree's default name */}
             <input
               type="text"
-              name="website"
+              name="_gotcha"
               style={{ display: "none" }}
               tabIndex={-1}
               autoComplete="off"
+            />
+            {/* Hidden subject field to fix 422 validation */}
+            <input
+              type="hidden"
+              name="_subject"
+              value="New submission from WP Fire Contact Form"
             />
             {/* Row 1 */}
             <div className="flex flex-col sm:flex-row justify-between mb-3 sm:mb-4 gap-2 sm:gap-3">

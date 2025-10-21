@@ -206,3 +206,4 @@ curl -X POST http://localhost:3000/api/send-contact \
 **👤 Responsible**: [DEVELOPMENT_TEAM]  
 **✅ Status**: Ready for content updates
 
+

@@ -26,3 +26,4 @@ This directory contains placeholder Open Graph images that need to be replaced w
 - Replace with actual branded images before launch
 - Update image paths in layout.js and services/page.js if filenames change
 
+
