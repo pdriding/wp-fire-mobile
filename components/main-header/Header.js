@@ -35,6 +35,37 @@ export default function Header() {
   const [headerHeight, setHeaderHeight] = useState(0);
   const [activeSection, setActiveSection] = useState("home");
 
+  // New: Dynamic --vh to prevent mobile viewport jumps
+  useEffect(() => {
+    const updateVH = throttle(() => {
+      const vh = window.innerHeight * 0.01;
+      document.documentElement.style.setProperty("--vh", `${vh}px`);
+    }, 200);
+
+    updateVH();
+    window.addEventListener("resize", updateVH);
+    window.addEventListener("orientationchange", updateVH);
+
+    return () => {
+      window.removeEventListener("resize", updateVH);
+      window.removeEventListener("orientationchange", updateVH);
+    };
+  }, []);
+
+  // Update header height on mount and resize for dynamic offset
+  useEffect(() => {
+    const updateHeaderHeight = throttle(() => {
+      if (headerRef.current) {
+        setHeaderHeight(headerRef.current.clientHeight);
+      }
+    }, 200);
+
+    updateHeaderHeight();
+    window.addEventListener("resize", updateHeaderHeight);
+
+    return () => window.removeEventListener("resize", updateHeaderHeight);
+  }, []);
+
   // scroll spy hook (kept from your original logic)
   const useScrollSpy = (ids, offset = 0) => {
     const [activeId, setActiveId] = useState("home");
@@ -77,12 +108,6 @@ export default function Header() {
 
     return activeId;
   };
-
-  useEffect(() => {
-    if (headerRef.current) {
-      setHeaderHeight(headerRef.current.clientHeight);
-    }
-  }, []);
 
   const sectionIds = ["home", "about-section", "contact-section"];
   const currentActive = useScrollSpy(sectionIds, headerHeight);
@@ -154,7 +179,7 @@ export default function Header() {
       scroller.scrollTo(sectionId, {
         duration: 500,
         smooth: true,
-        offset: -45,
+        offset: -headerHeight,
       });
       router.replace(urlWithHash);
       setTimeout(() => setActiveSection(sectionId), 550);

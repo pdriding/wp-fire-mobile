@@ -1,10 +1,72 @@
 "use client";
 
-import React from "react";
-import { Element } from "react-scroll";
+import React, { useEffect, useState } from "react";
+import { Element, scroller } from "react-scroll";
 import Link from "next/link";
+import { useRouter, usePathname } from "next/navigation";
+
+// Simple throttler for resize events
+const throttle = (func, limit) => {
+  let lastFunc;
+  let lastRan;
+  return (...args) => {
+    if (!lastRan) {
+      func(...args);
+      lastRan = Date.now();
+    } else {
+      clearTimeout(lastFunc);
+      lastFunc = setTimeout(() => {
+        if (Date.now() - lastRan >= limit) {
+          func(...args);
+          lastRan = Date.now();
+        }
+      }, Math.max(0, limit - (Date.now() - lastRan)));
+    }
+  };
+};
 
 const HeroSlider = () => {
+  const router = useRouter();
+  const pathname = usePathname();
+  const [headerHeight, setHeaderHeight] = useState(0);
+
+  // Dynamically measure header height on mount and resize (fallback if needed)
+  useEffect(() => {
+    const updateHeaderHeight = throttle(() => {
+      const header = document.querySelector("header");
+      if (header) {
+        setHeaderHeight(header.clientHeight);
+      }
+    }, 200);
+
+    requestAnimationFrame(updateHeaderHeight); // Measure after initial render
+    window.addEventListener("resize", updateHeaderHeight);
+
+    return () => window.removeEventListener("resize", updateHeaderHeight);
+  }, []);
+
+  const handleScrollToContact = (e) => {
+    e.preventDefault();
+    const sectionId = "contact-section";
+    if (window.location.hash === `#${sectionId}`) {
+      // If already at section, recalculate and scroll again if needed (prevents no-op overshoot)
+      scroller.scrollTo(sectionId, {
+        duration: 500,
+        smooth: true,
+        offset: -45, // Fixed to match header's working offset
+        isDynamic: true, // Recalculate position for repeated clicks
+      });
+    } else {
+      scroller.scrollTo(sectionId, {
+        duration: 500,
+        smooth: true,
+        offset: -45, // Fixed to match header
+        isDynamic: true,
+      });
+      router.replace(`/${pathname}#${sectionId}`); // Update hash only if changing
+    }
+  };
+
   return (
     <Element name="home">
       <section className="section-1 relative">
@@ -36,6 +98,7 @@ const HeroSlider = () => {
               <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
                 <Link
                   href="/#contact-section"
+                  onClick={handleScrollToContact}
                   className="get-quote font-roboto text-sm sm:text-base md:text-lg lg:text-xl font-semibold text-white bg-[#e53935] px-4 sm:px-6 lg:px-8 py-2 sm:py-3 lg:py-4 rounded-sm sm:rounded-md inline-block cursor-pointer no-underline transition-colors duration-300 hover:bg-[#c62828] focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-transparent"
                   aria-label="Request a free fire safety quote"
                 >
