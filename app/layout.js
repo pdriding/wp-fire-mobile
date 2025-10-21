@@ -6,7 +6,12 @@ export const metadata = {
   title: "WP Fire - Fire Alarm Installation Services",
   description:
     "Your trusted partner for professional fire alarm installation services.",
-  viewport: "width=device-width, initial-scale=1",
+};
+
+export const viewport = {
+  width: "device-width",
+  initialScale: 1,
+  minimumScale: 1,
 };
 
 export default function RootLayout({ children }) {
