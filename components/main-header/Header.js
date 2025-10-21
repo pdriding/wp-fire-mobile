@@ -34,12 +34,16 @@ export default function Header() {
   const mobileContentRef = useRef(null);
   const [headerHeight, setHeaderHeight] = useState(0);
   const [activeSection, setActiveSection] = useState("home");
+  const [maxVH, setMaxVH] = useState(1);
 
-  // New: Dynamic --vh to prevent mobile viewport jumps
+  // Dynamic --vh to prevent mobile viewport jumps, set to max height
   useEffect(() => {
     const updateVH = throttle(() => {
-      const vh = window.innerHeight * 0.01;
-      document.documentElement.style.setProperty("--vh", `${vh}px`);
+      const newVH = window.innerHeight * 0.01;
+      if (newVH > maxVH) {
+        setMaxVH(newVH);
+        document.documentElement.style.setProperty("--vh", `${newVH}px`);
+      }
     }, 200);
 
     updateVH();
@@ -50,7 +54,7 @@ export default function Header() {
       window.removeEventListener("resize", updateVH);
       window.removeEventListener("orientationchange", updateVH);
     };
-  }, []);
+  }, [maxVH]);
 
   // Update header height on mount and resize for dynamic offset
   useEffect(() => {
@@ -172,40 +176,23 @@ export default function Header() {
   }, [mobileOpen]);
 
   const handleHashClick = (e, hash) => {
+    e.preventDefault(); // Always prevent default to control behavior
     const sectionId = hash.slice(1);
-    const urlWithHash = "/" + hash;
+
     if (pathname === "/") {
-      e.preventDefault();
+      // Same-page scroll (unchanged)
       scroller.scrollTo(sectionId, {
         duration: 500,
         smooth: true,
         offset: -headerHeight,
       });
-      router.replace(urlWithHash);
+      router.replace(hash); // Update hash without reload
       setTimeout(() => setActiveSection(sectionId), 550);
       setMobileOpen(false);
     } else {
-      e.preventDefault();
+      // Cross-page: Set target and navigate without hash to avoid browser default scroll
       sessionStorage.setItem("scrollTarget", sectionId);
-      const headerElement = headerRef.current;
-      const targetElement = document.getElementById(sectionId);
-
-      if (headerElement && targetElement) {
-        const headerH = headerElement.clientHeight;
-        const targetTop = targetElement.getBoundingClientRect().top;
-        const scrollPosition = window.pageYOffset + targetTop;
-
-        sessionStorage.setItem(
-          "scrollData",
-          JSON.stringify({
-            headerHeight: headerH,
-            targetTop,
-            scrollPosition,
-          })
-        );
-      }
-
-      router.push(urlWithHash);
+      router.push("/"); // Navigate to root without hash
       setMobileOpen(false);
     }
   };
@@ -213,22 +200,30 @@ export default function Header() {
   useEffect(() => {
     if (pathname === "/") {
       const scrollTarget = sessionStorage.getItem("scrollTarget");
-      const scrollDataString = sessionStorage.getItem("scrollData");
 
-      if (scrollTarget && scrollDataString) {
-        setTimeout(() => {
+      if (scrollTarget) {
+        const scrollToSection = () => {
           const element = document.getElementById(scrollTarget);
-          if (element) {
-            const scrollData = JSON.parse(scrollDataString);
-            const offsetTop = element.offsetTop - scrollData.headerHeight;
-            window.scrollTo({
-              top: offsetTop,
-              behavior: "smooth",
+          if (element && headerRef.current) {
+            const freshHeaderHeight = headerRef.current.clientHeight;
+            scroller.scrollTo(scrollTarget, {
+              duration: 500,
+              smooth: true,
+              offset: -freshHeaderHeight,
             });
+            // After scroll animation, add hash to URL without triggering navigation
+            setTimeout(() => {
+              window.history.replaceState(null, "", `#${scrollTarget}`);
+              setActiveSection(scrollTarget);
+            }, 550);
+          } else {
+            // Retry if element or header not ready
+            requestAnimationFrame(scrollToSection);
           }
-          sessionStorage.removeItem("scrollTarget");
-          sessionStorage.removeItem("scrollData");
-        }, 100);
+        };
+
+        setTimeout(scrollToSection, 300); // Timeout for content stabilization (unchanged)
+        sessionStorage.removeItem("scrollTarget");
       }
     }
   }, [pathname]);
