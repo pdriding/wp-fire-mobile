@@ -8,12 +8,12 @@ export default function Contact() {
   const [submitStatus, setSubmitStatus] = useState(null);
   const [errors, setErrors] = useState({});
 
-  useEffect(() => {
-    if (mapRef.current) {
-      mapRef.current.innerText =
-        "Map placeholder (initialize Google Maps here with your API key)";
-    }
-  }, []);
+  // useEffect(() => {
+  //   if (mapRef.current) {
+  //     mapRef.current.innerText =
+  //       "Map placeholder (initialize Google Maps here with your API key)";
+  //   }
+  // }, []);
 
   async function handleSubmit(e) {
     e.preventDefault();
