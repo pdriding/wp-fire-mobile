@@ -106,13 +106,45 @@ export default function Header() {
   useEffect(() => {
     const compute = () => {
       if (mobileContentRef.current) {
-        setMobileMaxHeight(mobileContentRef.current.scrollHeight);
+        // include a small buffer for padding / safe-area so last item isn't clipped
+        const measured = mobileContentRef.current.scrollHeight;
+        setMobileMaxHeight(measured + 24); // 24px buffer
       }
     };
+
+    // compute on mount
     compute();
+
+    // recompute when window resizes (fonts could reflow)
     window.addEventListener("resize", compute);
-    return () => window.removeEventListener("resize", compute);
+
+    // recompute whenever the mobile menu opens so measurement happens on the visible content
+    // (this handles late font/image loads and ensures accurate measurement)
+    const observer = new MutationObserver(() => compute());
+    if (mobileContentRef.current) {
+      observer.observe(mobileContentRef.current, {
+        childList: true,
+        subtree: true,
+        characterData: true,
+      });
+    }
+
+    return () => {
+      window.removeEventListener("resize", compute);
+      observer.disconnect();
+    };
   }, []);
+
+  useEffect(() => {
+    if (mobileOpen) {
+      // measure on next paint now the menu is logically opening
+      requestAnimationFrame(() => {
+        if (mobileContentRef.current) {
+          setMobileMaxHeight(mobileContentRef.current.scrollHeight + 24);
+        }
+      });
+    }
+  }, [mobileOpen]);
 
   const handleHashClick = (e, hash) => {
     const sectionId = hash.slice(1);
@@ -177,7 +209,7 @@ export default function Header() {
   }, [pathname]);
 
   const baseLinkClass =
-    "inline-block no-underline font-normal text-sm sm:text-base hover:text-[#cf711f] active:text-[#b24f00] focus:outline-none focus:ring-0";
+    "inline-block no-underline font-normal text-base hover:text-[#cf711f] active:text-[#b24f00] focus:outline-none focus:ring-0 transition-colors duration-200";
 
   const getLinkClass = (section) => {
     if (pathname !== "/") {
@@ -197,7 +229,7 @@ export default function Header() {
   return (
     <header
       ref={headerRef}
-      className="sticky top-0 z-50 w-full bg-white shadow-sm"
+      className="sticky top-0 z-50 w-full bg-white shadow-md"
     >
       <div className="w-full max-w-[70rem] mx-auto px-4 sm:px-6 lg:px-8 h-16 sm:h-20 lg:h-24 flex items-center justify-between">
         <NextLink
@@ -224,7 +256,7 @@ export default function Header() {
         </NextLink>
 
         <nav className="hidden md:flex items-center flex-grow justify-end pr-4 lg:pr-8">
-          <ul className="list-none flex items-center gap-4 lg:gap-8 xl:gap-12">
+          <ul className="list-none flex items-center gap-6 lg:gap-8 xl:gap-12">
             <li>
               <NextLink
                 href="/"
@@ -272,59 +304,68 @@ export default function Header() {
           </ul>
         </nav>
 
-        <div className="hidden sm:flex gap-2 lg:gap-4 items-center justify-center">
-          <div className="border-l border-gray-400 h-3 mr-1" />
+        <div className="hidden sm:flex gap-3 lg:gap-4 items-center justify-center">
+          <div className="border-l border-gray-300 h-4 mr-2" />
           <IoCallOutline
-            size={24}
+            size={28}
             className="text-[#e53935] sm:w-6 sm:h-6 lg:w-8 lg:h-8"
           />
           <div className="flex flex-col">
-            <span className="text-xs lg:text-sm font-normal text-[#555]">
+            <span className="text-xs lg:text-sm font-medium text-[#555]">
               CALL US NOW
             </span>
-            <h2 className="text-sm lg:text-lg xl:text-xl font-semibold">
+            <h2 className="text-base lg:text-lg xl:text-xl font-bold">
               0333 880 2993
             </h2>
           </div>
         </div>
 
-        {/* Mobile menu button */}
+        {/* Mobile menu button with animation */}
         <button
-          className="md:hidden flex flex-col items-center justify-center w-8 h-8 space-y-1"
+          className="md:hidden flex flex-col items-center justify-center w-10 h-10 space-y-1.5 relative"
           aria-expanded={mobileOpen}
           aria-label="Toggle menu"
           onClick={() => setMobileOpen((s) => !s)}
         >
-          <span className="w-6 h-0.5 bg-gray-600"></span>
-          <span className="w-6 h-0.5 bg-gray-600"></span>
-          <span className="w-6 h-0.5 bg-gray-600"></span>
+          <span
+            className={`w-7 h-0.5 bg-gray-700 rounded transition-all duration-300 ease-in-out ${
+              mobileOpen ? "rotate-45 translate-y-2" : ""
+            }`}
+          ></span>
+          <span
+            className={`w-7 h-0.5 bg-gray-700 rounded transition-all duration-300 ease-in-out ${
+              mobileOpen ? "opacity-0" : ""
+            }`}
+          ></span>
+          <span
+            className={`w-7 h-0.5 bg-gray-700 rounded transition-all duration-300 ease-in-out ${
+              mobileOpen ? "-rotate-45 -translate-y-2" : ""
+            }`}
+          ></span>
         </button>
       </div>
 
-      {/* Mobile nav — using max-height animation to avoid transform repaint bugs */}
+      {/* Mobile nav — enhanced with opacity for smoother animation */}
       <nav
-        className={`md:hidden absolute left-0 right-0 top-full bg-white shadow-md z-40 transition-all duration-200 overflow-hidden`}
+        className={`md:hidden absolute left-0 right-0 top-full bg-white shadow-lg z-40 transition-all duration-300 ease-in-out overflow-hidden`}
         aria-hidden={!mobileOpen}
-        // add a tiny GPU hint to reduce flicker on some browsers
         style={{
           maxHeight: mobileOpen ? `${mobileMaxHeight}px` : "0px",
-          paddingTop: mobileOpen ? "1rem" : "0",
-          paddingBottom: mobileOpen ? "1rem" : "0",
+          opacity: mobileOpen ? 1 : 0,
+          paddingTop: mobileOpen ? "1.5rem" : "0",
+          paddingBottom: mobileOpen ? "1.5rem" : "0",
           WebkitBackfaceVisibility: "hidden",
           backfaceVisibility: "hidden",
           transform: "translateZ(0)",
           pointerEvents: mobileOpen ? "auto" : "none",
         }}
       >
-        <div
-          className="max-w-[70rem] mx-auto px-4 sm:px-6 lg:px-8"
-          ref={mobileContentRef}
-        >
-          <ul className="flex flex-col gap-3">
+        <div className="max-w-[70rem] mx-auto px-6" ref={mobileContentRef}>
+          <ul className="flex flex-col gap-6">
             <li>
               <NextLink
                 href="/"
-                className={`${baseLinkClass} text-[#333] block`}
+                className={`${baseLinkClass} text-[#333] block py-3 hover:bg-gray-50 rounded-md px-2 transition-all`}
                 onClick={(e) => {
                   if (pathname === "/") {
                     e.preventDefault();
@@ -333,7 +374,6 @@ export default function Header() {
                     setTimeout(() => setActiveSection("home"), 550);
                   }
                   setMobileOpen(false);
-                  // small repaint safeguard for flaky browsers
                   forceRepaint();
                 }}
               >
@@ -343,7 +383,7 @@ export default function Header() {
             <li>
               <NextLink
                 href="/services"
-                className={`${baseLinkClass} text-[#333] block`}
+                className={`${baseLinkClass} text-[#333] block py-3 hover:bg-gray-50 rounded-md px-2 transition-all`}
                 onClick={() => setMobileOpen(false)}
               >
                 Services
@@ -352,7 +392,7 @@ export default function Header() {
             <li>
               <NextLink
                 href="/#about-section"
-                className={`${baseLinkClass} text-[#333] block`}
+                className={`${baseLinkClass} text-[#333] block py-3 hover:bg-gray-50 rounded-md px-2 transition-all`}
                 onClick={(e) => handleHashClick(e, "#about-section")}
               >
                 About
@@ -361,13 +401,23 @@ export default function Header() {
             <li>
               <NextLink
                 href="/#contact-section"
-                className={`${baseLinkClass} text-[#333] block`}
+                className={`${baseLinkClass} text-[#333] block py-3 hover:bg-gray-50 rounded-md px-2 transition-all`}
                 onClick={(e) => handleHashClick(e, "#contact-section")}
               >
                 Contact
               </NextLink>
             </li>
           </ul>
+          {/* Added call section for mobile */}
+          <div className="mt-6 py-4 border-t border-gray-200 flex items-center justify-center gap-3">
+            <IoCallOutline size={24} className="text-[#e53935]" />
+            <div className="flex flex-col">
+              <span className="text-sm font-medium text-[#555]">
+                CALL US NOW
+              </span>
+              <h2 className="text-lg font-bold">0333 880 2993</h2>
+            </div>
+          </div>
         </div>
       </nav>
     </header>
