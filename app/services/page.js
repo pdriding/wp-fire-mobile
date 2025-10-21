@@ -1,41 +1,41 @@
 import Link from "next/link";
 
-// export const metadata = {
-//   title: "Fire Alarm Installation & Security Services",
-//   description:
-//     "Professional fire alarm installation, emergency lighting, and security systems across London & South East England. BAFE-certified technicians, 24/7 support, free site surveys.",
-//   keywords: [
-//     "fire alarm installation",
-//     "emergency lighting",
-//     "security systems",
-//     "CCTV",
-//     "intruder alarms",
-//     "access control",
-//     "London fire safety",
-//   ],
-//   openGraph: {
-//     title: "Fire Alarm Installation & Security Services | WP Fire",
-//     description:
-//       "Professional fire alarm installation, emergency lighting, and security systems across London & South East England. BAFE-certified technicians, 24/7 support.",
-//     url: "https://wpfire.co.uk/services",
-//     images: [
-//       {
-//         url: "/images/og-services.jpg",
-//         width: 1200,
-//         height: 630,
-//         alt: "WP Fire Services - Fire Alarm Installation and Security Systems",
-//       },
-//     ],
-//   },
-//   alternates: {
-//     canonical: "/services",
-//   },
-// };
+export const metadata = {
+  title: "Fire Alarm Installation & Security Services",
+  description:
+    "Professional fire alarm installation, emergency lighting, and security systems across London & South East England. BAFE-certified technicians, 24/7 support, free site surveys.",
+  keywords: [
+    "fire alarm installation",
+    "emergency lighting",
+    "security systems",
+    "CCTV",
+    "intruder alarms",
+    "access control",
+    "London fire safety",
+  ],
+  openGraph: {
+    title: "Fire Alarm Installation & Security Services | WP Fire",
+    description:
+      "Professional fire alarm installation, emergency lighting, and security systems across London & South East England. BAFE-certified technicians, 24/7 support.",
+    url: "https://wpfire.co.uk/services",
+    images: [
+      {
+        url: "/images/og-services.jpg",
+        width: 1200,
+        height: 630,
+        alt: "WP Fire Services - Fire Alarm Installation and Security Systems",
+      },
+    ],
+  },
+  alternates: {
+    canonical: "/services",
+  },
+};
 
 export default function ServicesPage() {
   return (
     <div className="bg-[#f5f5f5] text-gray-800 w-screen px-10 pb-10">
-      <main className="max-w-7xl mx-auto px-6  lg:py-20 pl-20">
+      <main className="max-w-7xl mx-auto px-6 lg:py-20 lg:pl-20">
         <header className="mb-10">
           <h1 className="text-4xl lg:text-5xl font-light mb-4">
             Professional Fire Safety Services
