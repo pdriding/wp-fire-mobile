@@ -73,7 +73,7 @@ const HeroSlider = () => {
         <div className="slideshow-container relative mx-auto max-h-[100vh] sm:max-h-[90vh]">
           <div className="mySlides animate-fade">
             <div
-              className="landing-image bg-cover h-[100vh] sm:h-[93vh] bg-[position:center_40%] flex flex-col justify-center items-start text-black text-left w-screen"
+              className="landing-image bg-cover h-[100vh] sm:h-[87vh] bg-[position:center_40%] flex flex-col justify-center items-start text-black text-left w-screen"
               style={{
                 backgroundImage: `url("/images/fire-alarm-landing-1.jpg")`,
               }}

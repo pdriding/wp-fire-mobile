@@ -32,6 +32,7 @@ export default function Header() {
   const router = useRouter();
   const headerRef = useRef(null);
   const mobileContentRef = useRef(null);
+  const lastTopRef = useRef(0);
   const [headerHeight, setHeaderHeight] = useState(0);
   const [activeSection, setActiveSection] = useState("home");
   const [maxVH, setMaxVH] = useState(1);
@@ -202,9 +203,17 @@ export default function Header() {
       const scrollTarget = sessionStorage.getItem("scrollTarget");
 
       if (scrollTarget) {
+        lastTopRef.current = 0; // Reset lastTop for new target
         const scrollToSection = () => {
           const element = document.getElementById(scrollTarget);
-          if (element && headerRef.current) {
+          if (!element || !headerRef.current) {
+            requestAnimationFrame(scrollToSection);
+            return;
+          }
+
+          const currentTop = element.offsetTop;
+          if (currentTop === lastTopRef.current) {
+            // OffsetTop has stabilized; perform the scroll
             const freshHeaderHeight = headerRef.current.clientHeight;
             scroller.scrollTo(scrollTarget, {
               duration: 500,
@@ -217,7 +226,8 @@ export default function Header() {
               setActiveSection(scrollTarget);
             }, 550);
           } else {
-            // Retry if element or header not ready
+            // OffsetTop changed; update and check again next frame
+            lastTopRef.current = currentTop;
             requestAnimationFrame(scrollToSection);
           }
         };
