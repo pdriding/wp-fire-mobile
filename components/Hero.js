@@ -4,6 +4,7 @@ import React, { useEffect, useState } from "react";
 import { Element, scroller } from "react-scroll";
 import Link from "next/link";
 import { useRouter, usePathname } from "next/navigation";
+import Image from "next/image";
 
 // Simple throttler for resize events
 const throttle = (func, limit) => {
@@ -72,14 +73,17 @@ const HeroSlider = () => {
       <section className="section-1 relative">
         <div className="slideshow-container relative mx-auto max-h-[100vh] sm:max-h-[90vh]">
           <div className="mySlides animate-fade">
-            <div
-              className="landing-image bg-cover h-[100vh] sm:h-[87vh] bg-[position:center_40%] flex flex-col justify-center items-start text-black text-left w-screen"
-              style={{
-                backgroundImage: `url("/images/fire-alarm-landing-1.jpg")`,
-              }}
-              role="img"
-              aria-label="Professional fire alarm installation in modern office building"
-            ></div>
+            {/* HERO IMAGE: replaced CSS background with optimized next/image */}
+            <div className="relative h-[100vh] sm:h-[90vh] w-screen">
+              <Image
+                src="/images/fire-alarm-landing-1.jpg"
+                alt="Professional fire alarm installation in modern office building"
+                fill
+                priority
+                className="object-cover object-[center_40%]"
+                sizes="100vw"
+              />
+            </div>
           </div>
         </div>
 
