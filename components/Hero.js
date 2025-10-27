@@ -74,7 +74,7 @@ const HeroSlider = () => {
         <div className="slideshow-container relative mx-auto max-h-[100vh] sm:max-h-[90vh]">
           <div className="mySlides animate-fade">
             {/* HERO IMAGE: replaced CSS background with optimized next/image */}
-            <div className="relative h-[100vh] sm:h-[90vh] w-screen">
+            <div className="relative h-[90vh] sm:h-[90vh] w-screen">
               <Image
                 src="/images/fire-alarm-landing-1.jpg"
                 alt="Professional fire alarm installation in modern office building"
