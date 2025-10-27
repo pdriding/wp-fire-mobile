@@ -31,7 +31,7 @@ const HeroSlider = () => {
   const pathname = usePathname();
   const [headerHeight, setHeaderHeight] = useState(0);
 
-  // Dynamically measure header height on mount and resize (fallback if needed)
+  // Dynamically measure header height on mount and resize
   useEffect(() => {
     const updateHeaderHeight = throttle(() => {
       const header = document.querySelector("header");
@@ -54,26 +54,36 @@ const HeroSlider = () => {
       scroller.scrollTo(sectionId, {
         duration: 500,
         smooth: true,
-        offset: -headerHeight, // Use dynamic headerHeight instead of fixed -45
+        offset: -headerHeight,
         isDynamic: true,
       });
     } else {
       scroller.scrollTo(sectionId, {
         duration: 500,
         smooth: true,
-        offset: -headerHeight, // Use dynamic headerHeight instead of fixed -45
+        offset: -headerHeight,
         isDynamic: true,
       });
       router.replace(`/${pathname}#${sectionId}`);
     }
   };
 
+  // Dynamic height style for the hero
+  const dynamicHeight =
+    headerHeight > 0 ? `calc(100vh - ${headerHeight}px)` : "100vh";
+
   return (
     <Element name="home">
       <section className="section-1 relative">
-        <div className="slideshow-container relative mx-auto max-h-[100vh] sm:max-h-[90vh]">
+        <div
+          className="slideshow-container relative mx-auto"
+          style={{ height: dynamicHeight }}
+        >
           <div className="mySlides animate-fade">
-            <div className="relative h-[90vh] sm:h-[90vh] w-screen">
+            <div
+              className="relative w-screen"
+              style={{ height: dynamicHeight }}
+            >
               <Image
                 src="/images/fire-alarm-landing-1.jpg"
                 alt="Professional fire alarm installation in modern office building"
